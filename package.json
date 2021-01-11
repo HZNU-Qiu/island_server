@@ -1,0 +1,23 @@
+{
+  "name": "island_server",
+  "version": "1.0.0",
+  "description": "毕业设计_服务端",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/HZNU-Qiu/island_server.git"
+  },
+  "author": "Wei,Wang",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/HZNU-Qiu/island_server/issues"
+  },
+  "homepage": "https://github.com/HZNU-Qiu/island_server#readme",
+  "dependencies": {
+    "koa": "^2.13.1",
+    "koa-router": "^10.0.0"
+  }
+}
