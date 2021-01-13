@@ -1,6 +1,25 @@
 const Koa = require('koa')
-const Router = require()
-
+const InitManager = require('./core/init')
+const parser = require('koa-bodyparser')
+const catchError = require('./middlewares/exception')
 const app = new Koa()
+
+require('./app/models/announcement')
+require('./app/models/class')
+require('./app/models/course')
+require('./app/models/course-category')
+require('./app/models/course-direction')
+require('./app/models/department')
+require('./app/models/major')
+require('./app/models/school')
+require('./app/models/student-info')
+require('./app/models/teacher-info')
+require('./app/models/university')
+require('./app/models/user')
+
+app.use(catchError)
+app.use(parser())
+
+InitManager.initCore(app)
 
 app.listen(8020)
