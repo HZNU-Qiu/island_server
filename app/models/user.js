@@ -3,7 +3,105 @@ const { Sequelize, Model } = require('sequelize')
 const bcryptjs = require('bcryptjs')
 
 class User extends Model {
+  /**
+   * 用户登录
+   */
+  static async login(username, password) {
+    let user = await User.findOne({
+      where: { username, status: 1 }
+    })
+    // 如果用户不存在
+    if (!user) {
+      throw new global.errs.AuthFailed('账号不存在,或被禁用')
+    }
+    const correct = bcryptjs.compareSync(password, user.password)
+    if (!correct) {
+      throw new global.errs.AuthFailed('账号密码错误')
+    }
+    return user
+  }
 
+  /**
+   * 管理员创建一个新增用户对象
+   */
+  static async add(user) {
+    return await User.create({
+      ...user
+    })
+  }
+
+  /**
+   * 管理员修改用户信息
+   */
+  static async modify(user) {
+    return await User.update({
+      ...user
+    }, {
+      where: {
+        id: user.id
+      }
+    })
+  }
+
+  /**
+   * 管理员查询用户(分页)
+   * @param offset 跳过数据量
+   * @param status 用户状态
+   * @param realname 用户姓名
+   * @param type 角色类型
+   */
+  static async queryByPage(offset, status, realname, type) {
+    let sql = `SELECT * FROM user WHERE status = ${status}`
+    if (realname) {
+      sql += `AND realname LIKE '%${realname}%'`
+    }
+    if (type) {
+      sql += `AND type = ${type}`
+    }
+    sql += `LIMIT 15 OFFSET ${offset}`
+    const data = await db.query(sql, { raw: true })
+    let user = {}
+    user.rows = data[0]
+    user.count = data[0].length
+    return user
+  }
+
+  /**
+   * 管理员禁用用户(软删除)
+   * @param id 用户id
+   */
+  static async ban(id) {
+    return await User.update({
+      status: 0
+    }, {
+      where: {
+        id
+      }
+    })
+  }
+
+  /**
+   * 管理员启用用户
+   * @param id 用户id
+   */
+  static async activate(id) {
+    return await User.update({
+      status: 1
+    }, {
+      where: {
+        id
+      }
+    })
+  }
+
+  /**
+   * 管理员删除人员
+   * @param id 用户id
+   * 待完成！！！！
+   */
+  static async kill(id) {
+
+  }
 }
 
 User.init({

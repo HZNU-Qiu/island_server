@@ -33,7 +33,7 @@ const db = new Sequelize(dbName, username, password, {
 })
 
 db.sync({
-  force: true
+  force: false
 })
 
 /**

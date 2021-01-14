@@ -1,8 +1,78 @@
 const { db } = require('../../core/db')
 const { Sequelize, Model } = require('sequelize')
+const Op = Sequelize.Op
 
 class School extends Model {
+  /**
+   * 创建学院
+   */
+  static async create(school) {
+    return await School.create({
+      ...school
+    })
+  }
 
+  /**
+   * 修改学院信息
+   * @param id
+   * @param name 学院名称
+   * @param universityId 从属学校id
+   */
+  static async modify(id, name, universityId) {
+    return await School.update({
+      name, universityId
+    }, {
+      where: {
+        id
+      }
+    })
+  }
+
+  /**
+   * 禁用学院
+   * @param id 学院id
+   */
+  static async ban(id) {
+    return await School.update({
+      status: 0
+    }, {
+      id
+    })
+  }
+
+  /**
+   * 禁用学院
+   * @param id 学院id
+   */
+  static async activate(id) {
+    return await School.update({
+      status: 1
+    }, {
+      id
+    })
+  }
+
+  /**
+   * 查询相关学院列表
+   * @param name 学院名称
+   */
+  static async queryAndList(name) {
+    if (name) {
+      return await School.findAll({
+        where: {
+          name: {
+            [Op.substring]: name
+          }
+        }
+      })
+    } else {
+      return await School.findAll()
+    }
+  }
+
+  /**
+   * 
+   */
 }
 
 School.init({
