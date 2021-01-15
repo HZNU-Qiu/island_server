@@ -2,6 +2,7 @@ const Koa = require('koa')
 const InitManager = require('./core/init')
 const parser = require('koa-bodyparser')
 const catchError = require('./middlewares/exception')
+const imageServer = require('koa-static')
 const app = new Koa()
 
 require('./app/models/announcement')
@@ -19,6 +20,7 @@ require('./app/models/user')
 
 app.use(catchError)
 app.use(parser())
+app.use(imageServer(__dirname + '/upload'))
 
 InitManager.initCore(app)
 
