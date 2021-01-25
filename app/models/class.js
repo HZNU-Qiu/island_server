@@ -1,12 +1,12 @@
 const { db } = require('../../core/db')
 const { Sequelize, Model } = require('sequelize')
 
-class Class extends Model {
+class ClassRoom extends Model {
   /**
    * 创建班级
    */
-  static async create(data) {
-    return await Class.create({
+  static async add(data) {
+    return await ClassRoom.create({
       ...data
     })
   }
@@ -14,13 +14,12 @@ class Class extends Model {
   /**
    * 编辑班级信息
    */
-  static async modify(data) {
-    return await Class.update({
-      name: data.name,
-      schoolId: data.schoolId
+  static async modify(id, name) {
+    return await ClassRoom.update({
+      name: name
     }, {
       where: {
-        id: data.id
+        id: id
       }
     })
   }
@@ -29,7 +28,7 @@ class Class extends Model {
    * 启用班级
    */
   static async activate(id) {
-    return await Class.update({
+    return await ClassRoom.update({
       status: 1
     }, {
       where: {
@@ -42,7 +41,7 @@ class Class extends Model {
    * 禁用班级
    */
   static async ban(id) {
-    return await Class.update({
+    return await ClassRoom.update({
       status: 0
     }, {
       where: {
@@ -52,7 +51,7 @@ class Class extends Model {
   }
 }
 
-Class.init({
+ClassRoom.init({
   // id
   id: {
     type: Sequelize.INTEGER,
@@ -62,7 +61,7 @@ Class.init({
   // 班级名称
   name: Sequelize.STRING(64),
   // 从属专业id
-  schoolId: Sequelize.INTEGER,
+  majorId: Sequelize.INTEGER,
   // 启用标识
   status: {
     type: Sequelize.INTEGER,
@@ -73,4 +72,4 @@ Class.init({
   tableName: 'class'
 })
 
-module.exports = { Class }
+module.exports = { ClassRoom }

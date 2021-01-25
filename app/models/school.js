@@ -6,7 +6,7 @@ class School extends Model {
   /**
    * 创建学院
    */
-  static async create(school) {
+  static async add(school) {
     return await School.create({
       ...school
     })
@@ -16,14 +16,13 @@ class School extends Model {
    * 修改学院信息
    * @param id
    * @param name 学院名称
-   * @param universityId 从属学校id
    */
-  static async modify(id, name, universityId) {
+  static async modify(id, name) {
     return await School.update({
-      name, universityId
+      name: name
     }, {
       where: {
-        id
+        id: id
       }
     })
   }

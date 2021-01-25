@@ -2,7 +2,7 @@ const judgeConfig = require('./judge-config')
 
 module.exports = {
   // 项目环境：dev|prod
-  environment: 'dev',
+  env: 'dev',
 
   // 数据库配置
   database: {

@@ -1,6 +1,8 @@
 const { db } = require('../../core/db')
 const { Sequelize, Model } = require('sequelize')
 const bcryptjs = require('bcryptjs')
+const { Auth } = require('../../middlewares/auth')
+const { generateToken } = require('../../core/util')
 
 class User extends Model {
   /**
@@ -18,7 +20,36 @@ class User extends Model {
     if (!correct) {
       throw new global.errs.AuthFailed('账号密码错误')
     }
-    return user
+    let scope = 4
+    switch (user.type) {
+      case 4:
+        scope = Auth.STUDENT
+        break
+      case 8:
+        scope = Auth.TEACHER
+        break
+      case 16:
+        scope = Auth.ADMIN
+        break
+      default:
+        throw new global.errs.ParameterException('系统异常，用户类型丢失')
+    }
+    const token = generateToken(user.id, scope)
+    let userData = {}
+    if (user.realname === null || user.sex === null) {
+      userData.isComplete = false
+    } else {
+      userData.isComplete = true
+    }
+    userData.id = user.id
+    userData.username = user.username
+    userData.type = user.type
+    userData.avatar = user.avatar
+    userData.email = user.email
+    return {
+      token,
+      userData
+    }
   }
 
   /**
@@ -41,6 +72,21 @@ class User extends Model {
         id: user.id
       }
     })
+  }
+
+  /**
+   * 获取用户基础信息
+   */
+  static async info(id) {
+    let user = await User.findOne({
+      attributes: {
+        exclude: ['password']
+      },
+      where: {
+        id: id
+      }
+    })
+    return user
   }
 
   /**

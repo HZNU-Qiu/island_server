@@ -5,7 +5,7 @@ class Department extends Model {
   /**
    * 创建一个系别
    */
-  static async create(department) {
+  static async add(department) {
     return await Department.create({
       ...department
     })
@@ -14,13 +14,12 @@ class Department extends Model {
   /**
    * 编辑系别信息
    */
-  static async modify(data) {
+  static async modify(id, name) {
     return await Department.update({
-      name: data.name,
-      schoolId: data.schoolId
+      name: name
     }, {
       where: {
-        id: data.id
+        id: id
       }
     })
   }

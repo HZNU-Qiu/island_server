@@ -16,7 +16,7 @@ const catchError = async (ctx, next) => {
         data: error.data,
         request: `${ctx.method} ${ctx.path}`
       }
-      ctx.status = error.code
+      ctx.status = 200
     } else {
       ctx.body = {
         // message: 'Unknown Error',

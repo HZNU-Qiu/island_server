@@ -5,7 +5,7 @@ class Major extends Model {
   /**
    * 创建一个专业
    */
-  static async create(major) {
+  static async add(major) {
     return await Major.create({
       ...major
     })
@@ -14,13 +14,12 @@ class Major extends Model {
   /**
    * 编辑专业信息
    */
-  static async update(major) {
+  static async modify(id, name) {
     return await Major.update({
-      name: major.name,
-      departmentId: major.departmentId
+      name: name
     }, {
       where: {
-        id: major.id
+        id: id
       }
     })
   }
