@@ -88,6 +88,42 @@ class University extends Model {
   }
 
   /**
+   * 展示所有院校树2教师用
+   */
+  static async getTree2() {
+    let universitys = await db.query(`SELECT id AS selfId,name AS label FROM university;`, { raw: true })
+    universitys = universitys[0]
+    let schools = await db.query(`SELECT id AS selfId,name AS label,university_id AS parentId FROM school WHERE status=1`, { raw: true })
+    schools = schools[0]
+    let departments = await db.query(`SELECT id AS selfId,name AS label,school_id AS parentId FROM department WHERE status=1`, { raw: true })
+    departments = departments[0]
+    schools.map((school) => {
+      school.rank = 2
+      school.children = []
+      departments.map((department) => {
+        if (department.parentId === school.selfId) {
+          department.id = 3000 + department.selfId
+          department.value = department.selfId
+          school.children.push(department)
+        }
+      })
+    })
+    universitys.map((university) => {
+      university.rank = 1
+      university.children = []
+      university.value = university.selfId
+      schools.map((school) => {
+        if (school.parentId === university.selfId) {
+          school.id = 200 + school.selfId
+          school.value = school.selfId
+          university.children.push(school)
+        }
+      })
+    })
+    return universitys
+  }
+
+  /**
    * 删除学校信息
    * @param id 学校id
    * 待完成！！！

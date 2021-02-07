@@ -5,7 +5,7 @@ class CourseDirection extends Model {
   /**
    * 创建学科方向
    */
-  static async create(direction) {
+  static async add(direction) {
     return await CourseDirection.create({
       ...direction
     })
@@ -14,11 +14,13 @@ class CourseDirection extends Model {
   /**
    * 编辑学科方向
    */
-  static async modify(id, name) {
+  static async modify(id, name, description) {
     return await CourseDirection.update({
-      name
+      name, description
     }, {
-      id
+      where: {
+        id
+      }
     })
   }
 
@@ -45,11 +47,11 @@ class CourseDirection extends Model {
   }
 
   /**
-   * 展示所有学科方向(分页)
+   * 展示所有学科方向
    * 未完成！！！
    */
-  static async listByPage(offset) {
-    return await CourseDirection.findAll({ offset, limit: 10 })
+  static async listAll() {
+    return await CourseDirection.findAll()
   }
 }
 

@@ -5,7 +5,7 @@ class CourseCategory extends Model {
   /**
    * 创建一个课程的类别
    */
-  static async create(data) {
+  static async add(data) {
     return await CourseCategory.create({
       ...data
     })
@@ -18,7 +18,9 @@ class CourseCategory extends Model {
     return await CourseCategory.update({
       ...data
     }, {
-      id: data.id
+      where: {
+        id: data.id
+      }
     })
   }
 
@@ -33,6 +35,16 @@ class CourseCategory extends Model {
     })
   }
 
+  /**
+   * 列出所有课程类别方向
+   */
+  static async list(id) {
+    return await CourseCategory.findAll({
+      where: {
+        direction:id
+      }
+    })
+  }
   /**
    * 启用课程类别
    */

@@ -19,7 +19,7 @@ class StudentInfo extends Model {
       ...info
     }, {
       where: {
-        id: info.id
+        user_id: info.id
       }
     })
   }

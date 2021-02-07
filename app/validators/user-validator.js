@@ -87,9 +87,28 @@ class GetInfoValidator extends LinValidator {
   }
 }
 
+/**
+ * 学生信息编辑校验器
+ */
+class ModifyStudentInfo extends LinValidator {
+  constructor() {
+    super()
+    this.realname = [
+      new Rule('isLength', '真实姓名不能为空', { min: 1 })
+    ]
+    this.sex = [
+      new Rule('isLength', 'sex不能为空', { min: 1, max: 2 })
+    ]
+    this.email = [
+      new Rule('isEmail', 'Email不合法')
+    ]
+  }
+}
+
 module.exports = {
   RegisterValidator,
   LoginValidator,
   GetInfoValidator,
+  ModifyStudentInfo,
   
 }

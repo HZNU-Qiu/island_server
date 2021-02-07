@@ -4,7 +4,7 @@ const router = new Router({ prefix: '/web/studentInfo' })
 const { Auth } = require('../../../middlewares/auth')
 const { StudentInfo } = require('../../models/student-info')
 const { User } = require('../../models/user')
-const { StudentInfoAddValidator } = require('../../validators/studentInfo-validator')
+const { StudentInfoAddValidator, AddStudentValidator } = require('../../validators/studentInfo-validator')
 
 /**
  * 学生用户信息完善
@@ -28,6 +28,32 @@ router.post('/infoComplete', new Auth(4).m, async (ctx) => {
 })
 
 /**
+ * 新增学生用户
+ */
+router.post('/addStudent', new Auth(16).m, async (ctx) => {
+  const v = await new AddStudentValidator().validate(ctx)
+  const user = {}
+  const studentData = {}
+  user.username = v.get('body.username')
+  user.realname = v.get('body.realname')
+  user.password = v.get('body.password1')
+  user.sex = v.get('body.sex')
+  user.email = v.get('body.email')
+  user.status = 1
+  user.type = 4
+  user.avatar = '/avatars/default.png'
+  studentData.universityId = v.get('body.university_id')
+  studentData.schoolId = v.get('body.school_id')
+  studentData.departmentId = v.get('body.department_id')
+  studentData.majorId = v.get('body.major_id')
+  studentData.classId = v.get('body.class_id')
+  let newuser = await User.add(user)
+  studentData.userId = newuser.id
+  await StudentInfo.add(studentData)
+  success('ok')
+})
+
+/**
  * 获取学生的个人身份信息
  */
 router.get('/getinfo', new Auth(4).m, async (ctx) => {
@@ -44,5 +70,15 @@ router.get('/getStatus', new Auth(4).m, async (ctx) => {
   let status = await StudentInfo.statusInfo(id)
   success('ok', status)
 })
+
+/**
+ * 保存学生学籍信息
+ */
+router.post('/modifyStudentStatus', new Auth(16).m, async (ctx) => {
+  let data = ctx.request.body
+  await StudentInfo.modify(data)
+  success('ok')
+})
+
 
 module.exports = router

@@ -3,6 +3,7 @@ const router = new Router({ prefix: '/web/university' })
 const { University } = require('../../models/university')
 const { UniversityAddValidator, UniversityNameModifyValidator } = require('../../validators/university-validator')
 const { success } = require('../../lib/helper')
+const { Auth } = require('../../../middlewares/auth')
 
 router.post('/add', async (ctx) => {
   const v = await new UniversityAddValidator().validate(ctx)
@@ -27,6 +28,11 @@ router.post('/modify', async (ctx) => {
 
 router.get('/getTree', async () => {
   let tree = await University.getTree()
+  success('ok', tree)
+})
+
+router.get('/getTree2', new Auth(8).m, async () => {
+  let tree = await University.getTree2()
   success('ok', tree)
 })
 

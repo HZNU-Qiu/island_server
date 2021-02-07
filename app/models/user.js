@@ -6,6 +6,18 @@ const { generateToken } = require('../../core/util')
 
 class User extends Model {
   /**
+   * 上传学生图片
+   */
+  static async uploadAvatar(id, url) {
+    await User.update({
+      avatar: url
+    }, {
+      where: {
+        id: id
+      }
+    })
+  }
+  /**
    * 用户登录
    */
   static async login(username, password) {
@@ -90,26 +102,51 @@ class User extends Model {
   }
 
   /**
-   * 管理员查询用户(分页)
+   * 管理员查询学生用户(分页)
    * @param offset 跳过数据量
    * @param status 用户状态
    * @param realname 用户姓名
    * @param type 角色类型
    */
-  static async queryByPage(offset, status, realname, type) {
-    let sql = `SELECT * FROM user WHERE status = ${status}`
-    if (realname) {
-      sql += `AND realname LIKE '%${realname}%'`
-    }
-    if (type) {
-      sql += `AND type = ${type}`
-    }
-    sql += `LIMIT 15 OFFSET ${offset}`
-    const data = await db.query(sql, { raw: true })
-    let user = {}
-    user.rows = data[0]
-    user.count = data[0].length
-    return user
+  static async queryStudentByPage(offset) {
+    let sql = `SELECT u.id,u.username,u.realname,u.sex,u.openid,u.email,u.avatar,
+    un.id AS university_id, un.name AS university,
+    sc.id AS school_id, sc.name AS school,
+    de.id AS department_id, de.name AS department,
+    ma.id AS major_id, ma.name AS major,
+    cl.id AS class_id, cl.name AS classroom
+    FROM user u JOIN student_info s ON u.id = s.user_id
+    JOIN university un ON un.id = s.university_id
+    JOIN school sc ON sc.id = s.school_id
+    JOIN department de ON de.id = s.department_id
+    JOIN major ma ON ma.id = s.major_id
+    JOIN class cl ON cl.id = s.class_id
+    WHERE u.type = 4
+    LIMIT 15 OFFSET ${offset}`
+    let data = await db.query(sql, { raw: true })
+    return data[0]
+  }
+
+    /**
+   * 管理员查询教师用户(分页)
+   * @param offset 跳过数据量
+   * @param status 用户状态
+   * @param realname 用户姓名
+   * @param type 角色类型
+   */
+  static async queryTeacherByPage(offset) {
+    let sql = `SELECT u.id,u.username,u.realname,u.sex,u.openid,u.email,u.avatar,
+    un.id AS university_id, un.name AS university,
+    sc.id AS school_id, sc.name AS school,
+    de.id AS department_id, de.name AS department
+    FROM user u JOIN teacher_info t ON u.id = t.user_id
+    JOIN university un ON un.id = t.university_id
+    JOIN school sc ON sc.id = t.school_id
+    JOIN department de ON de.id = t.department_id
+    WHERE u.type = 8
+    LIMIT 15 OFFSET ${offset}`
+    let data = await db.query(sql, { raw: true })
+    return data[0]
   }
 
   /**
