@@ -1,5 +1,7 @@
 const { db } = require('../../core/db')
 const { Sequelize, Model } = require('sequelize')
+const path = require('path');
+const fs = require('fs')
 
 class CourseCategory extends Model {
   /**
@@ -15,6 +17,11 @@ class CourseCategory extends Model {
    * 编辑课程类别
    */
   static async modify(data) {
+    let tag = await CourseCategory.findByPk(data.id)
+    if (tag.icon !== data.icon) {
+      let p = path.join(__dirname, `../../upload${tag.icon}`)
+      fs.unlinkSync(p)
+    }
     return await CourseCategory.update({
       ...data
     }, {
@@ -41,7 +48,7 @@ class CourseCategory extends Model {
   static async list(id) {
     return await CourseCategory.findAll({
       where: {
-        direction:id
+        direction: id
       }
     })
   }

@@ -14,33 +14,33 @@ Course.init({
   },
   // 课程名称
   name: Sequelize.STRING(64),
-  // 创建者id
-  creatorId: Sequelize.INTEGER,
+  // 课程描述
+  description: Sequelize.STRING(255),
+  // 课程难度
+  difficulty: {
+    type: Sequelize.INTEGER,
+    defaultValue: 1
+  },
+  // 课程综合评分
+  point: {
+    type: Sequelize.FLOAT(3, 2),
+    defaultValue: 0.00
+  },
+  // 课程须知
+  notice: Sequelize.STRING(255),
+  // 课程目标
+  objectives: Sequelize.STRING(255),
   // 启用标识
   status: {
     type: Sequelize.INTEGER,
     defaultValue: 0
   },
-  // 难度
-  difficulty: {
-    type: Sequelize.INTEGER,
-    defaultValue: 1
-  },
+  // 创建者id
+  creatorId: Sequelize.INTEGER,
   // 类别
-  category: {
-    type: Sequelize.INTEGER,
-    defaultValue: 0
-  },
+  categoryId: Sequelize.INTEGER,
   // 方向
-  direction: {
-    type: Sequelize.INTEGER,
-    defaultValue: 0
-  },
-  // 学习人数
-  learnedSum: {
-    type: Sequelize.INTEGER,
-    defaultValue: 0
-  }
+  directionId: Sequelize.INTEGER,
 }, {
   sequelize: db,
   tableName: 'course'

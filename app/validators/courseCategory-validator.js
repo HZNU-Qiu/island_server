@@ -4,22 +4,25 @@ const { CourseCategory } = require('../models/course-category')
 class AddCourseCategoryValidator extends LinValidator {
   constructor() {
     super()
-    this.name = [
+    this.tagName = [
       new Rule('isLength', '类别名称不能为空且不能多余16个字符', { min: 1, max: 16 })
     ]
-    this.description = [
-      new Rule('isLength', '类别描述不能为空且不能多余24个字符', { min: 1, max: 24 })
+    this.direction = [
+      new Rule('isInt', '类别从属方向ID丢失', { min: 1 })
+    ]
+    this.iconImage = [
+      new Rule('isLength', '类别图标地址丢失', { min: 5 })
     ]
   }
   async validateName(vals) {
-    let name = vals.body.directionName
+    let name = vals.body.tagName
     let tag = await CourseCategory.findOne({
       where: {
         name: name
       }
     })
     if (tag) {
-      throw new Error('该方向已存在')
+      throw new Error('该类别已存在')
     }
   }
 }
@@ -33,8 +36,8 @@ class ModifyCourseCategoryValidator extends LinValidator {
     this.name = [
       new Rule('isLength', '类别名称不能为空且不能多余16个字符', { min: 1, max: 16 })
     ]
-    this.description = [
-      new Rule('isLength', '类别描述不能为空且不能多余24个字符', { min: 1, max: 24 })
+    this.icon = [
+      new Rule('isLength', '类别标签不能为空', { min: 5 })
     ]
   }
 }
@@ -52,5 +55,5 @@ module.exports = {
   AddCourseCategoryValidator,
   ModifyCourseCategoryValidator,
   ListTagsValidator,
-  
+
 }
