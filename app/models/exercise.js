@@ -18,10 +18,10 @@ Exercise.init({
   type: Sequelize.INTEGER,
   // 题目难度
   difficulty: Sequelize.INTEGER,
-  // 所属课程ID
-  courseId: Sequelize.INTEGER,
-  // 所属章节ID
-  chapterId: Sequelize.INTEGER,
+  // 所属方向ID
+  directionId: Sequelize.INTEGER,
+  // 所属类别ID
+  categoryId: Sequelize.INTEGER,
   // 题干信息
   content: Sequelize.TEXT,
   // 正确答案

@@ -53,6 +53,17 @@ class CourseDirection extends Model {
   static async listAll() {
     return await CourseDirection.findAll()
   }
+
+  /**
+   * 展示所有课程方向及其所含类别
+   */
+  static async getTree() {
+    let sql = `SELECT d.id AS direction_id, d.name AS direction_name,
+    c.id AS category_id, c.name AS category_name 
+    FROM direction d JOIN category c ON d.id=c.direction`
+    let data = await db.query(sql, { raw: true })
+    return data
+  }
 }
 
 CourseDirection.init({

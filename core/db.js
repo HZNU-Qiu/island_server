@@ -33,6 +33,7 @@ const db = new Sequelize(dbName, username, password, {
 })
 
 db.sync({
+  // 先备份在true
   force: false
 })
 

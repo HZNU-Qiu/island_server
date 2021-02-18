@@ -23,6 +23,7 @@ const app = new Koa()
 // require('./app/models/teacher-info')
 // require('./app/models/university')
 // require('./app/models/user')
+// require('./app/models/course-content')
 
 app.use(catchError)
 app.use(parser())

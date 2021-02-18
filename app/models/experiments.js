@@ -58,8 +58,8 @@ Experiment.init({
   },
   // 题目标签 FK(label_id) 所属标签 逗号连接 1，2，3
   label: Sequelize.STRING(255),
-  // 所属课程id FK(course_id)
-  courseId: Sequelize.INTEGER
+  // 所属类别id FK(course_id)
+  categoryId: Sequelize.INTEGER
 }, {
   sequelize: db,
   tableName: 'experiments'
