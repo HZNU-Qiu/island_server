@@ -23,4 +23,10 @@ router.get('/getAll/:id', new Auth(4).m, async (ctx) => {
   success('ok', data)
 })
 
+router.post('/changeName', new Auth(8).m, async (ctx) => {
+  let data = ctx.request.body
+  await Chapter.changeName(data)
+  success('ok')
+})
+
 module.exports = router

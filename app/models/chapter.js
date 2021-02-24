@@ -40,6 +40,19 @@ class Chapter extends Model {
     })
     return res
   }
+
+  /**
+   * 修改章节名称
+   */
+  static async changeName(data) {
+    await Chapter.update({
+      name: data.name
+    }, {
+      where: {
+        id: data.id
+      }
+    })
+  }
 }
 
 Chapter.init({
