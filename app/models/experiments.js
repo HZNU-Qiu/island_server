@@ -183,7 +183,7 @@ class Experiment extends Model {
     let query = options.join(' AND ')
     let sql = `SELECT e.id, e.title, e.difficulty, e.point, e.display_id AS displayId, l.name AS labelName, (SELECT COUNT(1) FROM experiments WHERE ${query}) AS total
     FROM experiments e LEFT JOIN label l ON e.label=l.id
-    WHERE ${query}`
+    WHERE ${query} ORDER BY e.display_id`
     sql += ` LIMIT 20 OFFSET ${offset}`
     let res = await db.query(sql, { raw: true })
     let experiments = res[0]
@@ -196,27 +196,44 @@ class Experiment extends Model {
     FROM experiment_submit
     WHERE experiment_id in (${experimentIds}) AND user_id = ${data.userId}`
     let hasSubmitted = await db.query(sql2, { raw: true })
+    let sql3 = `SELECT COUNT(1) AS submitNum, experiment_id
+    FROM experiment_submit GROUP BY experiment_id
+    HAVING experiment_id in (${experimentIds})
+    UNION
+    SELECT COUNT(1) AS AC, experiment_id FROM experiment_submit WHERE experiment_id in (${experimentIds}) AND result = 0 GROUP BY experiment_id`
+    let resNum = await db.query(sql3, { raw: true })
+    resNum = resNum[0]
+    let x = 0
     experiments.map((item) => {
+      item.result = -2
+      let submitNum = 0
+      let ACNum = 0
+      let ACRate = 0.0
+      item.submitNum = submitNum
+      item.ACRate = (ACRate * 100).toString() + '%'
+      for (let i = 0; i < resNum.length / 2; i++) {
+        if (resNum[i].experiment_id === undefined) {
+          continue
+        } else if (item.id === resNum[i].experiment_id) {
+          submitNum = resNum[i].submitNum
+          ACNum = resNum[resNum.length / 2 + i].submitNum
+          ACRate = 0
+          if (ACNum !== 0) {
+            ACRate = (ACNum / submitNum).toFixed(3)
+          }
+          item.submitNum = submitNum
+          item.ACRate = (ACRate * 100).toString() + '%'
+        } else {
+          item.submitNum = submitNum
+          item.ACRate = (ACRate * 100).toString() + '%'
+        }
+      }
       hasSubmitted.map((item2) => {
         if (item2.experiment_id === item.id) {
           item.result = item2.result
         }
       })
     })
-    let sql3 = `SELECT COUNT(1) AS submitNum,(SELECT COUNT(1) FROM experiment_submit WHERE experiment_id in (${experimentIds}) AND result = 0) AS AC
-    FROM experiment_submit
-    WHERE experiment_id in (${experimentIds})`
-    let resNum = await db.query(sql3, { raw: true })
-    console.log(resNum)
-    resNum = resNum[0][0]
-    let submitNum = resNum.submitNum
-    let ACNum = res.AC
-    let ACRate = 0
-    if (ACNum !== 0) {
-      ACRate = ACNum / submitNum
-    }
-    experiments.submitNum = submitNum
-    experiments.ACRate = ACRate
     return experiments
   }
 

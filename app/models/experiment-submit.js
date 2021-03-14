@@ -33,6 +33,13 @@ class ExperimentSubmit extends Model {
     let totalTime = 0
     let totalMemory = 0
     let index = 0
+    if (res.data.err !== null) {
+      return {
+        flag: -1,
+        msg: res.data.err,
+        reason: res.data.data
+      }
+    }
     resultArr.some((item) => {
       if (item.result !== 0) {
         switch (item.result) {
@@ -63,9 +70,12 @@ class ExperimentSubmit extends Model {
           default:
             break
         }
+        totalTime += item.real_time
+        totalMemory += item.memory
+        index++
         return true
       } else {
-        totalTime += item.cpu_time
+        totalTime += item.real_time
         totalMemory += item.memory
         index++
       }
@@ -86,13 +96,18 @@ class ExperimentSubmit extends Model {
           userId: data.userId
         }
       })
-      await student.increment('practiceAbility', { by: data.point })
+      if (student !== null) {
+        await student.increment('practiceAbility', { by: data.point })
+      }
     }
     await ExperimentSubmit.create({
       ...saveData
     })
     let hasSubmitted = await ExperimentSubmit.findAndCountAll({
-      attributes: ['result']
+      attributes: ['result'],
+      where: {
+        experimentId: data.experimentId
+      }
     })
     let submitedNum = hasSubmitted.count
     let ac = 0, wa = 0, tle = 0, mle = 0, rtle = 0, re = 0
@@ -121,11 +136,49 @@ class ExperimentSubmit extends Model {
       }
     })
     let resData = {}
-    resData.result
+    resData.result = result
     resData.msg = msg
     resData.avgMemory = saveData.memory
     resData.avgTime = saveData.timeConsumption
     resData.submitedNum = submitedNum
+    resData.flag = 1
+    resData.chartData = {
+      hoverBackgroundColor: "red",
+      hoverBorderWidth: 10,
+      labels: ["AC", "WA", "RE", "RTLE", "MLE", "TLE"],
+      datasets: [
+        {
+          label: "Data One",
+          backgroundColor: [
+            "#41B883",
+            "#E46651",
+            "#00D8FF",
+            "#ffc107",
+            "#673ab7",
+            "#ff5722",
+          ],
+          data: [ac, wa, re, rtle, mle, tle],
+        },
+      ],
+    }
+    return resData
+  }
+
+  /**
+   * 获取提交队列
+   */
+  static async queryQueue(data) {
+    let sql = `SELECT (SELECT COUNT(1) from experiment_submit e WHERE e.result = ${data.result} AND e.code_lang = '${data.codeLang}' AND experiment_id = ${data.experimentId})AS total, e.result, e.code_size AS codeSize, e.code_lang AS codeLang, e.code, e.memory AS avgMemory, e.time_consumption AS avgTime, date_format(e.created_at, '%Y-%m-%d %H:%i:%s') AS submitTime, u.realname AS name
+    FROM experiment_submit e LEFT JOIN user u ON e.user_id = u.id
+    WHERE e.result = ${data.result} AND e.code_lang = '${data.codeLang}' AND experiment_id = ${data.experimentId}
+    LIMIT 30 OFFSET ${(data.current - 1) * 30}`
+    let res = await db.query(sql, { raw: true })
+    res[0].map((item) => {
+      item.avgTime = item.avgTime + "MS"
+      item.avgMemory = item.avgMemory / 1024 + "KB"
+      item.codeSize = item.codeSize + "Byte" 
+    })
+    return res[0]
   }
 }
 

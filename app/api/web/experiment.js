@@ -109,8 +109,17 @@ router.post('/judge', new Auth(4).m, async (ctx) => {
   let uid = ctx.auth.uid
   let data = ctx.request.body
   data.userId = uid
-  await ExperimentSubmit.judge(data)
-  success('ok')
+  let res = await ExperimentSubmit.judge(data)
+  success('ok', res)
+})
+
+/**
+ * 获取提交队列接口
+ */
+router.post('/queryQueue', new Auth(4).m, async (ctx) => {
+  let body = ctx.request.body
+  let data = await ExperimentSubmit.queryQueue(body)
+  success('ok', data)
 })
 
 module.exports = router
