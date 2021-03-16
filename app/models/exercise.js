@@ -76,6 +76,33 @@ class Exercise extends Model {
       }
     })
   }
+
+  /**
+   * 根据难度题型筛选练习
+   */
+  static async filterExercise(query) {
+    let option = []
+    let offset = (query.current - 1) * 20
+    let chapterId = query.chapterId
+    if (query.difficulty !== 0) {
+      option.push(`e.difficulty = ${query.difficulty}`)
+    }
+    if (query.type !== 0) {
+      option.push(`e.type = ${query.type}`)
+    }
+    let sql1 = `SELECT c.category_id FROM course c JOIN chapter ON c.id = chapter.course_id WHERE chapter.id = ${chapterId}`
+    let res1 = await db.query(sql1, { raw: true })
+    let categoryId = res1[0][0].category_id
+    option.push(`e.category_id = ${categoryId}`)
+    option.push(`e.status = 1`)
+    let str = option.join(' AND ')
+    let sql = `SELECT e.id, e.type, e.difficulty, e.content, e.options, e.answer, e.hint, e.remark, (SELECT COUNT(1) FROM exercise e WHERE ${str}) AS total
+    FROM exercise e
+    WHERE ${str}
+    LIMIT 20 OFFSET ${offset}`
+    let res = await db.query(sql, { raw: true })
+    return res[0]
+  }
 }
 
 Exercise.init({
