@@ -46,4 +46,10 @@ router.post('/filterExercise', new Auth(4).m, async (ctx) => {
   success('ok', data)
 })
 
+router.post('/getExercisesForPaper', new Auth(8).m, async (ctx) => {
+  let body = ctx.request.body
+  let data = await Exercise.getExercisesForPaper(body)
+  success('ok', data)
+})
+
 module.exports = router

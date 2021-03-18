@@ -51,7 +51,35 @@ class Course extends Model {
     JOIN direction d ON c.direction_id = d.id
     WHERE c.id = ${id}`
     let data = await db.query(sql, { raw: true })
-    return  data[0][0]
+    return data[0][0]
+  }
+  /**
+   * 获取课程树
+   * 方向>类别>课程
+   */
+  static async getCourseTree() {
+    let sql1 = 'SELECT id AS value, name AS label FROM direction'
+    let sql2 = 'SELECT id AS value, name AS label, direction AS directionId FROM category'
+    let sql3 = 'SELECT id AS value, name AS label, category_id AS categoryId FROM course'
+    let res = await Promise.all([db.query(sql1, { raw: true }), db.query(sql2, { raw: true }), db.query(sql3, { raw: true })])
+    let directions = res[0][0]
+    let categorys = res[1][0]
+    let courses = res[2][0]
+    directions.map((direction) => {
+      direction.children = []
+      categorys.map((category) => {
+        category.children = []
+        if (category.directionId === direction.value) {
+          direction.children.push(category)
+        }
+        courses.map((course) => {
+          if (course.categoryId === category.value) {
+            category.children.push(course)
+          }
+        })
+      })
+    })
+    return directions
   }
 }
 

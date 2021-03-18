@@ -12,6 +12,33 @@ class Exercise extends Model {
   }
 
   /**
+   * 添加试题时筛选题目
+   */
+  static async getExercisesForPaper(data) {
+    let categoryId = data.categoryId
+    let difficulty = data.difficulty
+    let current = data.current
+    let offset = (current - 1) * 10
+    let type = data.type
+    let queryArr = []
+    let queryCMD = ""
+    if (difficulty !== 0) {
+      queryArr.push(`e.difficulty = ${difficulty}`)
+    }
+    if (type !== 0) {
+      queryArr.push(`e.type = ${type}`)
+    }
+    queryArr.push(`e.category_id = ${categoryId} AND e.status = 1`)
+    queryCMD = queryArr.join(" AND ")
+    let sql = `SELECT e.id, e.type, e.difficulty, e.content, e.options, e.answer, e.hint, e.remark, (SELECT COUNT(1) FROM exercise e WHERE ${queryCMD}) AS total
+    FROM exercise e
+    WHERE ${queryCMD}
+    LIMIT 20 OFFSET ${offset}`
+    let res = await db.query(sql, { raw: true })
+    return res[0]
+  }
+
+  /**
    * 条件检索理论题库 flag
    * directionId flag-1
    * categoryId flag-2

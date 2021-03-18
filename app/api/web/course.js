@@ -44,5 +44,13 @@ router.get('/detail/:id', new Auth(8).m, async (ctx) => {
   success('ok', data)
 })
 
+/**
+ * 获取课程树
+ */
+router.get('/getCourseTree', new Auth(4).m, async () => {
+  let data = await Course.getCourseTree();
+  success('ok', data)
+})
+
 
 module.exports = router
