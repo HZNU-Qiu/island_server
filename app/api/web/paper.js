@@ -39,7 +39,7 @@ router.get('/info/:id', new Auth(8).m, async (ctx) => {
 /**
  * 获取试卷试题
  */
-router.get('/exercises/:id', new Auth(8).m, async (ctx) => {
+router.get('/exercises/:id', new Auth(4).m, async (ctx) => {
   let id = ctx.params.id
   let data = await Paper.getPaperExercises(id)
   success('ok', data)

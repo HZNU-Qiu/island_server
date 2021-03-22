@@ -82,7 +82,7 @@ class Paper extends Model {
    * 获取试卷题目
    */
   static async getPaperExercises(id) {
-    let sql = `SELECT e.*, p.id, p.point, p.paper_id 
+    let sql = `SELECT e.id AS exerciseId, e.type, e.content, e.options, p.id, p.point, p.paper_id 
     FROM paper_exercises p LEFT JOIN exercise e ON p.exercise_id = e.id
     WHERE p.paper_id = ${id}`
     let res = await db.query(sql, { raw: true })

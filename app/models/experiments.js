@@ -194,7 +194,7 @@ class Experiment extends Model {
     })
     let sql2 = `SELECT experiment_id, result
     FROM experiment_submit
-    WHERE experiment_id in (${experimentIds}) AND user_id = ${data.userId}`
+    WHERE experiment_id in (${experimentIds}) AND user_id = ${data.userId} AND result = 0`
     let hasSubmitted = await db.query(sql2, { raw: true })
     let sql3 = `SELECT COUNT(1) AS submitNum, experiment_id
     FROM experiment_submit GROUP BY experiment_id
@@ -219,16 +219,16 @@ class Experiment extends Model {
           ACNum = resNum[resNum.length / 2 + i].submitNum
           ACRate = 0
           if (ACNum !== 0) {
-            ACRate = (ACNum / submitNum).toFixed(3)
+            ACRate = (ACNum * 100 / submitNum).toFixed(1)
           }
           item.submitNum = submitNum
-          item.ACRate = (ACRate * 100).toString() + '%'
+          item.ACRate = ACRate.toString() + '%'
         } else {
           item.submitNum = submitNum
-          item.ACRate = (ACRate * 100).toString() + '%'
+          item.ACRate = ACRate.toString() + '%'
         }
       }
-      hasSubmitted.map((item2) => {
+      hasSubmitted[0].map((item2) => {
         if (item2.experiment_id === item.id) {
           item.result = item2.result
         }

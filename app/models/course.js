@@ -81,6 +81,30 @@ class Course extends Model {
     })
     return directions
   }
+
+  /**
+   * 根据方向、类别、难度、是否是用户课程筛选课程信息
+   */
+  static async filterCourse(data) {
+    let current = data.current
+    let offset = (current - 1) * 20
+    let queryObj = {}
+    if (data.directionId !== -1) {
+      queryObj.directionId = data.directionId
+    } 
+    if (data.categoryId !== -1) {
+      queryObj.categoryId = data.categoryId
+    } 
+    if (data.difficulty !== -1) {
+      queryObj.difficulty = data.difficulty
+    }
+    queryObj.status = 1
+    return await Course.findAndCountAll({
+      where: queryObj,
+      limit: 20,
+      offset
+    })
+  }
 }
 
 Course.init({

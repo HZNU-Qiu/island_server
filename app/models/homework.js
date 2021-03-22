@@ -30,9 +30,9 @@ class Homework extends Model {
    * 获取该章节所有的作业题目
    */
   static async listHomework(chapterId) {
-    let sql1 = `SELECT e.id, e.type, e.difficulty, e.content, e.options, e.answer, e.hint, e.remark
+    let sql1 = `SELECT e.id, e.type, e.difficulty, e.content, e.options, e.answer, e.hint, e.remark, h.id AS homeworkId
     FROM homework h LEFT JOIN exercise e ON h.exercise_id = e.id
-    WHERE h.chapter_id = ${chapterId} GROUP BY e.id`
+    WHERE h.chapter_id = ${chapterId} GROUP BY h.id`
     let res1 = await db.query(sql1, { raw: true })
     res1[0].map((item) => {
       item.options = item.options.split(';')

@@ -44,7 +44,7 @@ router.post('/modify', new Auth(8).m, async (ctx) => {
 /**
  * 展示所有课程方向及其所含类别
  */
-router.get('/getTree', new Auth(8).m, async (ctx) => {
+router.get('/getTree', new Auth(4).m, async (ctx) => {
   let data = await CourseDirection.getTree()
   success('ok', data)
 })

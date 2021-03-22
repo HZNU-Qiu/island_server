@@ -45,6 +45,53 @@ class Exam extends Model {
     })
     return data
   }
+
+  /**
+   * 获取当前学生所学课程的考试
+   */
+  static async listStudentExams(userId) {
+    const { StudentCourse } = require('./student-course')
+    let courses = await StudentCourse.findAll({
+      attributes: ['courseId']
+      , where: {
+        studentId: userId
+      }
+    })
+    let courseIds = []
+    courses.map((item) => {
+      courseIds.push(item.courseId)
+    })
+    let sql = `SELECT e.id, e.name, e.course_id AS courseId, e.paper_id AS paperId, date_format(e.start_time, '%Y-%m-%d %H:%i:%s') AS startTime, date_format(e.end_time, '%Y-%m-%d %H:%i:%s') AS endTime
+    FROM exam e WHERE e.course_id in (${courseIds})`
+    let res = await db.query(sql, { raw: true })
+    let exams = res[0]
+    // 获取学生已报名的考试
+    const { AttendExam } = require('./attend-exam')
+    let hasAttend = await AttendExam.findAll({
+      where: {
+        userId
+      }
+    })
+    exams.map(x => {
+      x.hasJoined = false
+      let startTimestamp = new Date(x.startTime)
+      let endTimestamp = new Date(x.endTime)
+      let currentTime = new Date().getTime();
+      if (currentTime < startTimestamp) {
+        x.status = 0
+      } else if (currentTime > startTimestamp && currentTime < endTimestamp) {
+        x.status = 1
+      } else {
+        x.status = 2
+      }
+      hasAttend.map(y => {
+        if (x.id === y.examId) {
+          x.hasJoined = true
+        }
+      })
+    })
+    return exams
+  }
 }
 
 Exam.init({

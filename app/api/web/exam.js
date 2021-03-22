@@ -23,4 +23,10 @@ router.get('/getTeachersExam', new Auth(8).m, async (ctx) => {
   success('ok', data)
 })
 
+router.get('/listStudentExams', new Auth(4).m, async (ctx) => {
+  let userId = ctx.auth.uid
+  let data = await Exam.listStudentExams(userId)
+  success('ok', data)
+})
+
 module.exports = router
