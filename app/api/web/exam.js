@@ -29,4 +29,10 @@ router.get('/listStudentExams', new Auth(4).m, async (ctx) => {
   success('ok', data)
 })
 
+router.get('/getExamDuration/:id', new Auth(4).m, async (ctx) => {
+  let id = ctx.params.id
+  let data = await Exam.getExamDuration(id)
+  success('ok', data)
+})
+
 module.exports = router

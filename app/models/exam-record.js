@@ -65,6 +65,16 @@ class ExamRecord extends Model {
     await AttendExam.create({
       ...attendData
     })
+    // 将分数存入学生的个人信息，添加理论能力值
+    const { StudentInfo } = require('../models/student-info')
+    let student = await StudentInfo.findOne({
+      where: {
+        userId: data.userId
+      }
+    })
+    if (student !== null) {
+      await student.increment('theoryAbility', { by: total })
+    }
   }
 }
 

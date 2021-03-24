@@ -127,13 +127,13 @@ class User extends Model {
     return data[0]
   }
 
-    /**
-   * 管理员查询教师用户(分页)
-   * @param offset 跳过数据量
-   * @param status 用户状态
-   * @param realname 用户姓名
-   * @param type 角色类型
-   */
+  /**
+ * 管理员查询教师用户(分页)
+ * @param offset 跳过数据量
+ * @param status 用户状态
+ * @param realname 用户姓名
+ * @param type 角色类型
+ */
   static async queryTeacherByPage(offset) {
     let sql = `SELECT u.id,u.username,u.realname,u.sex,u.openid,u.email,u.avatar,
     un.id AS university_id, un.name AS university,
@@ -175,6 +175,125 @@ class User extends Model {
         id
       }
     })
+  }
+
+  /**
+   * 获取用户首页信息
+   */
+  static async getHomePageInfo(id, scope) {
+    // 系统管理员
+    const { Exercise } = require('./exercise')
+    const { Experiment } = require('./experiments')
+    const { Course } = require('./course')
+    let res, tagData, info, resData
+    switch (scope) {
+      case 4:
+        const { StudentInfo } = require('./student-info')
+        const { StudentCourse } = require('./student-course')
+        res = await Promise.all([
+          User.count({ where: { type: 8 } }),
+          User.count({ where: { type: 4 } }),
+          Exercise.count(),
+          Experiment.count(),
+          StudentCourse.count({ where: { studentId: id } }),
+          StudentInfo.findOne({ where: { userId: id } }),
+          Course.findOne({ order: [['id', 'DESC']] }),
+          Course.findOne({ order: [['point', 'DESC']] })
+        ])
+        tagData = []
+        tagData[0] = {}
+        tagData[1] = {}
+        tagData[2] = {}
+        tagData[3] = {}
+        tagData[0].title = "教师数量"
+        tagData[0].data = res[0]
+        tagData[1].title = "学生数量"
+        tagData[1].data = res[1]
+        tagData[2].title = "理论题库"
+        tagData[2].data = res[2]
+        tagData[3].title = "实验题库"
+        tagData[3].data = res[3]
+        info = {}
+        info.detail1 = { number: res[4], label: '我的课程' }
+        info.detail2 = { number: res[5].theoryAbility, label: '理论能力' }
+        info.detail3 = { number: res[5].practiceAbility, label: '实践能力' }
+        info.hot = res[6].name
+        info.newest = res[7].name
+        resData = {}
+        resData.tagData = tagData
+        resData.info = info
+        return resData
+      case 8:
+        const { TeacherInfo } = require('./teacher-info')
+        res = await Promise.all([
+          User.count({ where: { type: 8 } }),
+          User.count({ where: { type: 4 } }),
+          Exercise.count({ where: { creatorId: id } }),
+          Experiment.count({ where: { editorId: id } }),
+          Course.count({ where: { creatorId: id } }),
+          TeacherInfo.findOne({ where: { userId: id } }),
+          Course.findOne({ order: [['id', 'DESC']] }),
+          Course.findOne({ order: [['point', 'DESC']] })
+        ])
+        tagData = []
+        tagData[0] = {}
+        tagData[1] = {}
+        tagData[2] = {}
+        tagData[3] = {}
+        tagData[0].title = "教师数量"
+        tagData[0].data = res[0]
+        tagData[1].title = "学生数量"
+        tagData[1].data = res[1]
+        tagData[2].title = "我的理论题库"
+        tagData[2].data = res[2]
+        tagData[3].title = "我的实验题库"
+        tagData[3].data = res[3]
+        info = {}
+        info.detail1 = { number: res[5].popularity + 24, label: '热度' }
+        info.detail2 = { number: res[4], label: '我的课程' }
+        info.detail3 = { number: res[5].popularity, label: '我的学生' }
+        info.hot = res[6].name
+        info.newest = res[7].name
+        resData = {}
+        resData.tagData = tagData
+        resData.info = info
+        return resData
+      case 16:
+        const { School } = require('./school')
+        res = await Promise.all([
+          User.count({ where: { type: 8 } }),
+          User.count({ where: { type: 4 } }),
+          Exercise.count(),
+          Experiment.count(),
+          Course.count(),
+          School.count(),
+          Course.findOne({ order: [['id', 'DESC']] }),
+          Course.findOne({ order: [['point', 'DESC']] })
+        ])
+        tagData = []
+        tagData[0] = {}
+        tagData[1] = {}
+        tagData[2] = {}
+        tagData[3] = {}
+        tagData[0].title = "教师数量"
+        tagData[0].data = res[0]
+        tagData[1].title = "学生数量"
+        tagData[1].data = res[1]
+        tagData[2].title = "理论题总量"
+        tagData[2].data = res[2]
+        tagData[3].title = "实验题总量"
+        tagData[3].data = res[3]
+        info = {}
+        info.detail1 = { number: res[0] + res[1], label: '用户总量' }
+        info.detail2 = { number: res[4], label: '课程总量' }
+        info.detail3 = { number: res[5], label: '院校总量' }
+        info.hot = res[6].name
+        info.newest = res[7].name
+        resData = {}
+        resData.tagData = tagData
+        resData.info = info
+        return resData
+    }
   }
 
   /**

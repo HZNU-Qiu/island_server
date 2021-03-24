@@ -13,7 +13,7 @@ const koaBodyOptions = {
   formidable: {
     uploadDir: path.join(__dirname, '../../../upload/avatars'),
     maxFileSize: 200 * 1024 * 1024,    // 设置上传文件大小最大限制，默认2M
-    keepExtensions: true, 
+    keepExtensions: true,
     onError: (err) => {
       console.log(err);
       throw new Error('上传出错啦')
@@ -112,6 +112,16 @@ router.post('/changeAvatar', new Auth(16).m, body(koaBodyOptions), async (ctx) =
   }
   await User.uploadAvatar(id, src)
   success('ok', src)
+})
+
+/**
+ * 获取用户首页信息
+ */
+router.get('/getHomePageInfo', new Auth(4).m, async (ctx) => {
+  let id = ctx.auth.uid
+  let scope = ctx.auth.scope
+  let data = await User.getHomePageInfo(id, scope)
+  success('ok', data)
 })
 
 module.exports = router

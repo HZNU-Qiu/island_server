@@ -92,6 +92,32 @@ class Exam extends Model {
     })
     return exams
   }
+
+  /**
+   * 获取考试的起始时间，以及当前剩余时间
+   */
+  static async getExamDuration(id) {
+    let res = await Exam.findOne({
+      attributes: [ 
+        [Sequelize.fn('date_format', Sequelize.col('start_time'), '%Y-%m-%d %h:%m:%s'), 'startTime'],
+        [Sequelize.fn('date_format', Sequelize.col('end_time'), '%Y-%m-%d %h:%m:%s'), 'endTime'],
+        ]
+        , where: {
+          id
+        }
+    })
+    let startTimestamp = new Date(res.startTime)
+    let endTimestamp = new Date(res.endTime)
+    let totalDuration = endTimestamp - startTimestamp
+    let currentTimestamp = new Date().getTime()
+    let leftTimestamp = currentTimestamp - startTimestamp
+    let timePercent = ((leftTimestamp / (totalDuration)) * 100 ).toFixed(1)
+    let resData = {}
+    resData.startTime = res.startTime
+    resData.endTime = res.endTime
+    resData.timePercent = timePercent
+    return resData
+  }
 }
 
 Exam.init({
