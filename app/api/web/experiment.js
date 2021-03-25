@@ -103,6 +103,14 @@ router.post('/filterAndList', new Auth(4).m, async (ctx) => {
 })
 
 /**
+ * ping服务器获取参数
+ */
+router.get('/ping', new Auth(16).m, async () => {
+  let data = await ExperimentSubmit.pingServer()
+  success('ok', data)
+})
+
+/**
  * 判题接口
  */
 router.post('/judge', new Auth(4).m, async (ctx) => {

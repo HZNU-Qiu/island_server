@@ -4,9 +4,24 @@ const { Result } = require('../lib/enum')
 const config = require('../../config/config')
 const judgeConfig = config.judge_config
 const serverUrl = config.judge_server_url
+const OJServerUrl = config.OJ_server_url
 const axios = require('axios')
 
 class ExperimentSubmit extends Model {
+
+  /**
+   * 检测判题服务器参数
+   */
+  static async pingServer() {
+    let header = config.judge_header
+    let res = await axios({
+      method: 'POST',
+      url: OJServerUrl,
+      headers: header
+    })
+    return res.data
+  }
+
   /**
    * 判题服务
    * @param {*} data 
@@ -176,7 +191,7 @@ class ExperimentSubmit extends Model {
     res[0].map((item) => {
       item.avgTime = item.avgTime + "MS"
       item.avgMemory = item.avgMemory / 1024 + "KB"
-      item.codeSize = item.codeSize + "Byte" 
+      item.codeSize = item.codeSize + "Byte"
     })
     return res[0]
   }

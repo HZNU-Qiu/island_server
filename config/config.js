@@ -16,6 +16,7 @@ module.exports = {
     secretKey: 'abcdefg',        // 秘钥
     expiresIn: 60 * 60 * 24 * 30,   // 令牌过期时间 一个月
   },
+  OJ_server_url:'http://120.27.247.78:8001/ping',
   judge_server_url: 'http://120.27.247.78:8001/judge',
   judge_header: {
     'X-Judge-Server-Token': '9c53f96fd584d25e2f61787076590f299c082fba8a4157fb190ba0dc8cca5759',
