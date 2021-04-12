@@ -251,7 +251,7 @@ class User extends Model {
         info = {}
         info.detail1 = { number: res[5].popularity + 24, label: '热度' }
         info.detail2 = { number: res[4], label: '我的课程' }
-        info.detail3 = { number: res[5].popularity, label: '我的学生' }
+        info.detail3 = { number: res[1] - 2, label: '我的学生' }
         info.hot = res[6].name
         info.newest = res[7].name
         resData = {}
