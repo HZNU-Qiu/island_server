@@ -58,6 +58,9 @@ class Exam extends Model {
       }
     })
     let courseIds = []
+    if (courses.length === 0) {
+      courseIds = [0]
+    }
     courses.map((item) => {
       courseIds.push(item.courseId)
     })

@@ -13,7 +13,6 @@ const koaBodyOptions = {
     maxFileSize: 200 * 1024 * 1024,    // 设置上传文件大小最大限制，默认2M
     keepExtensions: true,
     onError: (err) => {
-      console.log(err);
       throw new Error('上传出错啦')
     }
   }
@@ -26,7 +25,6 @@ const koaBodyOptions2 = {
     maxFileSize: 200 * 1024 * 1024,    // 设置上传文件大小最大限制，默认2M
     keepExtensions: true,
     onError: (err) => {
-      console.log(err);
       throw new Error('上传出错啦')
     }
   }

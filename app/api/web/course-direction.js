@@ -13,7 +13,6 @@ router.post('/add', new Auth(16).m, async (ctx) => {
   let name = v.get('body.directionName')
   let description = v.get('body.directionDesc')
   let res = await CourseDirection.add({ name, description, status: 1 })
-  console.log(res)
   let data = {}
   data.id = res.id
   data.name = res.name

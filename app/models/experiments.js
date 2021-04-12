@@ -150,7 +150,6 @@ class Experiment extends Model {
       await compressing.tar.compressDir(path, `${savePath}/${displayId}.tar`)
       return `http://localhost:8020/tmp/${displayId}.tar`
     } catch (error) {
-      console.log(error)
     }
   }
 

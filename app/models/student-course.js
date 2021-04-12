@@ -43,7 +43,6 @@ class StudentCourse extends Model {
       }
     })
     let flag
-    console.log(rec)
     if (rec !== null && rec !== "") {
       return flag = -1
     }
